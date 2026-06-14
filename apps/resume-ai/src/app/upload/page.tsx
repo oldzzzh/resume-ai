@@ -14,7 +14,7 @@ export default function UploadPage() {
   const [t,setT]=useState("");const[j,setJ]=useState("");const[fn,setFn]=useState("");const[r,setR]=useState(null);
   const[ld,setLd]=useState(false);const[er,setEr]=useState("");const[dg,setDg]=useState(false);
   const[st,setSt]=useState(false);const[tb,setTb]=useState("resume");const fr=useRef(null);
-  const hf=async f=>{setFn(f.name);setT(await f.text())};
+  const hf=async f=>{setFn(f.name);if(f.name.endsWith(".docx")){try{const fd=new FormData();fd.append("file",f);const r=await fetch("/api/parse-docx",{method:"POST",body:fd});const d=await r.json();setT(d.text||d.error||"Parse error")}catch(e){setEr(e.message)}}else{setT(await f.text())}};
   const go=async()=>{setLd(true);setEr("");setR(null);try{
     const x=await fetch("/api/optimize",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({resume:t,jobDescription:j,generateCoverLetter:tb==="both"})});
     const d=await x.json();if(!x.ok)throw Error(d.error);const p=d.result.split("COVER_LETTER_SEPARATOR");setR({o:p[0].trim(),cl:p[1]?.trim()||""})
